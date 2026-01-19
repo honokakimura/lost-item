@@ -46,9 +46,9 @@ export function ItemFilters({ filters, onFiltersChange }: ItemFiltersProps) {
               <SelectValue placeholder="選択してください" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="本郷キャンパス">本郷キャンパス</SelectItem>
-              <SelectItem value="駒場キャンパス">駒場キャンパス</SelectItem>
-              <SelectItem value="柏キャンパス">柏キャンパス</SelectItem>
+              <SelectItem value="六甲台第一キャンパス">六甲台第一キャンパス</SelectItem>
+              <SelectItem value="鶴甲第一キャンパス">鶴甲第一キャンパス</SelectItem>
+              <SelectItem value="六甲台第二キャンパス">六甲台第二キャンパス</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -64,14 +64,14 @@ export function ItemFilters({ filters, onFiltersChange }: ItemFiltersProps) {
               <SelectValue placeholder="選択してください" />
             </SelectTrigger>
             <SelectContent>
-              {filters.campus === "本郷キャンパス" && (
+              {filters.campus === "六甲台第一キャンパス" && (
                 <>
                   <SelectItem value="工学部1号館">工学部1号館</SelectItem>
                   <SelectItem value="図書館">図書館</SelectItem>
                   <SelectItem value="総合図書館">総合図書館</SelectItem>
                 </>
               )}
-              {filters.campus === "駒場キャンパス" && (
+              {filters.campus === "鶴甲第一キャンパス" && (
                 <>
                   <SelectItem value="学生会館">学生会館</SelectItem>
                   <SelectItem value="教養学部棟">教養学部棟</SelectItem>

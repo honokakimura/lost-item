@@ -6,7 +6,7 @@ import { MapPin, Clock, Phone, Mail } from "lucide-react"
 const storageLocations = [
   {
     id: "1",
-    campus: "本郷キャンパス",
+    campus: "六甲台第一キャンパス",
     locations: [
       {
         name: "学生支援課",
@@ -26,7 +26,7 @@ const storageLocations = [
   },
   {
     id: "2",
-    campus: "駒場キャンパス",
+    campus: "鶴甲第一キャンパス",
     locations: [
       {
         name: "教務課窓口",
