@@ -11,7 +11,7 @@ const mockItems = [
     id: "1",
     category: "財布・小物類",
     location: {
-      campus: "本郷キャンパス",
+      campus: "六甲台第一キャンパス",
       building: "工学部1号館",
       detail: "2階の講義室A",
     },
@@ -24,7 +24,7 @@ const mockItems = [
     id: "2",
     category: "傘",
     location: {
-      campus: "本郷キャンパス",
+      campus: "六甲台第一キャンパス",
       building: "図書館",
       detail: "1階入り口付近",
     },
@@ -36,7 +36,7 @@ const mockItems = [
     id: "3",
     category: "電子機器",
     location: {
-      campus: "駒場キャンパス",
+      campus: "鶴甲第一キャンパス",
       building: "学生会館",
       detail: "カフェテリア",
     },
@@ -49,7 +49,7 @@ const mockItems = [
     id: "4",
     category: "衣類",
     location: {
-      campus: "本郷キャンパス",
+      campus: "六甲台第一キャンパス",
       building: "総合図書館",
       detail: "3階閲覧室",
     },
@@ -61,7 +61,7 @@ const mockItems = [
     id: "5",
     category: "文房具・学用品",
     location: {
-      campus: "駒場キャンパス",
+      campus: "鶴甲第一キャンパス",
       building: "教養学部棟",
       detail: "講義室305",
     },

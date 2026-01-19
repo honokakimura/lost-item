@@ -72,19 +72,16 @@ export function PostItemForm() {
                     <SelectValue placeholder="選択してください" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="本郷キャンパス">本郷キャンパス</SelectItem>
-                    <SelectItem value="駒場キャンパス">駒場キャンパス</SelectItem>
-                    <SelectItem value="柏キャンパス">柏キャンパス</SelectItem>
+                    <SelectItem value="六甲台第一キャンパス">六甲台第一キャンパス</SelectItem>
+                    <SelectItem value="鶴甲第一キャンパス">鶴甲第一キャンパス</SelectItem>
+                    <SelectItem value="六甲台第二キャンパス">六甲台第二キャンパス</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="building">
-                  建物 <span className="text-destructive">*</span>
-                </Label>
+                <Label htmlFor="building">建物</Label>
                 <Select
-                  required
                   value={formData.building}
                   onValueChange={(value) => setFormData({ ...formData, building: value })}
                   disabled={!formData.campus}
@@ -93,7 +90,7 @@ export function PostItemForm() {
                     <SelectValue placeholder="選択してください" />
                   </SelectTrigger>
                   <SelectContent>
-                    {formData.campus === "本郷キャンパス" && (
+                    {formData.campus === "六甲台第一キャンパス" && (
                       <>
                         <SelectItem value="工学部1号館">工学部1号館</SelectItem>
                         <SelectItem value="工学部2号館">工学部2号館</SelectItem>
@@ -102,7 +99,7 @@ export function PostItemForm() {
                         <SelectItem value="学生食堂">学生食堂</SelectItem>
                       </>
                     )}
-                    {formData.campus === "駒場キャンパス" && (
+                    {formData.campus === "鶴甲第一キャンパス" && (
                       <>
                         <SelectItem value="学生会館">学生会館</SelectItem>
                         <SelectItem value="教養学部棟">教養学部棟</SelectItem>
@@ -115,11 +112,11 @@ export function PostItemForm() {
 
               <div className="space-y-2">
                 <Label htmlFor="locationDetail">
-                  詳細な場所 <span className="text-destructive">*</span>
+                  詳細な場所 {!formData.building && <span className="text-destructive">*</span>}
                 </Label>
                 <Input
                   id="locationDetail"
-                  required
+                  required={!formData.building}
                   placeholder="例: 2階の講義室A、入り口付近など"
                   value={formData.locationDetail}
                   onChange={(e) => setFormData({ ...formData, locationDetail: e.target.value })}
@@ -142,7 +139,10 @@ export function PostItemForm() {
                     <SelectValue placeholder="選択してください" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="財布・小物類">財布・小物類</SelectItem>
+                    <SelectItem value="財布">財布</SelectItem>
+                    <SelectItem value="携帯電話">携帯電話</SelectItem>
+                    <SelectItem value="ノートパソコン">ノートパソコン</SelectItem>
+                    <SelectItem value="学生証">学生証</SelectItem>
                     <SelectItem value="傘">傘</SelectItem>
                     <SelectItem value="電子機器">電子機器</SelectItem>
                     <SelectItem value="衣類">衣類</SelectItem>
@@ -167,12 +167,9 @@ export function PostItemForm() {
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="description">
-                  詳細説明 <span className="text-destructive">*</span>
-                </Label>
+                <Label htmlFor="description">詳細説明</Label>
                 <Textarea
                   id="description"
-                  required
                   placeholder="色、ブランド、特徴などできるだけ詳しく記入してください"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -183,22 +180,32 @@ export function PostItemForm() {
 
             {/* Optional Section */}
             <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="image">写真（任意）</Label>
-                <div className="flex items-center gap-4">
-                  <Input id="image" type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => document.getElementById("image")?.click()}
-                    className="w-full sm:w-auto gap-2"
-                  >
-                    <Upload className="h-4 w-4" />
-                    {formData.image ? formData.image.name : "写真を選択"}
-                  </Button>
+              {!["財布", "鍵", "携帯電話", "ノートパソコン", "学生証"].includes(formData.category) && (
+                <div className="space-y-2">
+                  <Label htmlFor="image">写真（任意）</Label>
+                  <div className="flex items-center gap-4">
+                    <Input id="image" type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => document.getElementById("image")?.click()}
+                      className="w-full sm:w-auto gap-2"
+                    >
+                      <Upload className="h-4 w-4" />
+                      {formData.image ? formData.image.name : "写真を選択"}
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">落とし物の写真があると見つけやすくなります</p>
                 </div>
-                <p className="text-xs text-muted-foreground">落とし物の写真があると見つけやすくなります</p>
-              </div>
+              )}
+
+              {["財布", "鍵", "携帯電話", "ノートパソコン", "学生証"].includes(formData.category) && (
+                <div className="rounded-md bg-muted p-3">
+                  <p className="text-sm text-muted-foreground">
+                    貴重品のため、写真のアップロードはできません
+                  </p>
+                </div>
+              )}
 
               <div className="flex items-center space-x-2">
                 <Checkbox
