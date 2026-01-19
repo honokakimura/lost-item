@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Package, Home, MapPin } from "lucide-react"
+import { Package, Home } from "lucide-react"
 
 export function Header() {
   return (
@@ -20,14 +20,8 @@ export function Header() {
               <span className="hidden sm:inline">ホーム</span>
             </Link>
           </Button>
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/storage" className="flex items-center gap-2">
-              <MapPin className="h-4 w-4" />
-              <span className="hidden sm:inline">保管場所</span>
-            </Link>
-          </Button>
           <Button asChild>
-            <Link href="/post">投稿する</Link>
+            <Link href="/post">落とし物をみつけた</Link>
           </Button>
         </nav>
       </div>
