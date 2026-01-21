@@ -13,24 +13,45 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
-const STORAGE_KEY = "initialSetupAcknowledged";
+const STORAGE_KEY = "initialDialogHiddenUntil";
 
 function InitialSetupDialog() {
   const [isOpen, setIsOpen] = useState(false);
-  const [doNotShowAgain, setDoNotShowAgain] = useState(false);
+  const [doNotShowForOneHour, setDoNotShowForOneHour] = useState(false);
 
   useEffect(() => {
+    // マウント時にLocalStorageを確認
+    const hiddenUntil = localStorage.getItem(STORAGE_KEY);
+    const now = new Date().getTime();
+
+    // 期限内（1時間以内）であれば表示しない
+    if (hiddenUntil && now < parseInt(hiddenUntil, 10)) {
+      return;
+    }
+
     const timer = window.setTimeout(() => setIsOpen(true), 500);
     return () => clearTimeout(timer);
   }, []);
 
+  // 設定を保存するヘルパー関数
+  const saveSettingsIfNeeded = () => {
+    if (doNotShowForOneHour) {
+      const oneHourLater = new Date().getTime() + 60 * 60 * 1000;
+      localStorage.setItem(STORAGE_KEY, oneHourLater.toString());
+    }
+  };
+
   const handleOpenChange = (newOpenState: boolean) => {
+    // ダイアログが閉じられるタイミングで保存
+    if (!newOpenState) {
+      saveSettingsIfNeeded();
+    }
     setIsOpen(newOpenState);
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-106.25">
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader className="flex flex-col items-center text-center">
           <DialogTitle className="text-xl font-bold">
             落とし物をみつけた！
@@ -40,21 +61,33 @@ function InitialSetupDialog() {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-4">
-            <Button
+        <div className="grid gap-4 py-4">
+          <Button
             onClick={() => {
-                setIsOpen(false);
-                window.location.href="/post";
+              saveSettingsIfNeeded(); // 遷移前にも保存を実行
+              setIsOpen(false);
+              window.location.href = "/post";
             }}
-            className={`w-full h-12 font-semibold text-base order-1 sm:order-2 transition-opacity`}
+            className="w-full h-12 font-semibold text-base"
           >
             落とし物を知らせる
           </Button>
         </div>
 
-        <DialogFooter className="flex flex-col gap-3">
-          {/* 承諾ボタン */}
-          
+        <DialogFooter className="flex sm:justify-center">
+          <div className="flex items-center space-x-2">
+            <Checkbox 
+              id="doNotShow" 
+              checked={doNotShowForOneHour}
+              onCheckedChange={(checked) => setDoNotShowForOneHour(checked as boolean)}
+            />
+            <Label 
+              htmlFor="doNotShow" 
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+            >
+              1時間は表示しない
+            </Label>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
