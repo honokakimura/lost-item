@@ -51,7 +51,7 @@ function InitialSetupDialog() {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-106.25">
         <DialogHeader className="flex flex-col items-center text-center">
           <DialogTitle className="text-xl font-bold">
             落とし物をみつけた！
