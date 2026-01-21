@@ -8,15 +8,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { MapPin, Package, CheckCircle, ArrowLeft, X, ChevronRight } from "lucide-react"
+import { MapPin, Package, CheckCircle, ArrowLeft, X, ChevronRight, Loader2 } from "lucide-react"
 import Image from "next/image"
+import { useToast } from "../hooks/use-toast"
 
 // 貴重品リスト
 const VALUABLES = ["財布", "携帯電話", "ノートパソコン", "学生証", "鍵", "電子機器"]
 
 export function PostItemForm() {
   const router = useRouter()
+  const { toast } = useToast()
   const [step, setStep] = useState(1)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   
   // フォームデータ
   const [formData, setFormData] = useState({
@@ -28,7 +31,7 @@ export function PostItemForm() {
     description: "",
     submittedToOffice: null as boolean | null,
     officeDetail: "",
-    image: null as string | null, // 写真データ
+    image: null as string | null,
   })
 
   // カメラ関連
@@ -43,8 +46,6 @@ export function PostItemForm() {
     return () => stopCamera()
   }, [step])
 
-  // ★修正: カテゴリ選択時に画像を消す useEffect を削除しました
-
   const startCamera = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
@@ -55,6 +56,11 @@ export function PostItemForm() {
     } catch (err) {
       console.error("Camera error:", err)
       setIsCameraActive(false)
+      toast({
+        title: "カメラエラー",
+        description: "カメラにアクセスできませんでした",
+        variant: "destructive",
+      })
     }
   }
 
@@ -70,7 +76,7 @@ export function PostItemForm() {
     canvas.width = videoRef.current.videoWidth
     canvas.height = videoRef.current.videoHeight
     canvas.getContext("2d")?.drawImage(videoRef.current, 0, 0)
-    const photoUrl = canvas.toDataURL("image/jpeg")
+    const photoUrl = canvas.toDataURL("image/jpeg", 0.8)
     
     setFormData(prev => ({ ...prev, image: photoUrl }))
     stopCamera()
@@ -78,16 +84,41 @@ export function PostItemForm() {
   }
 
   const handleSubmit = async () => {
-    // ★修正: 送信時にカテゴリをチェックし、貴重品なら画像を削除して送信データを作成
-    const submissionData = { ...formData }
+    setIsSubmitting(true)
     
-    if (VALUABLES.includes(submissionData.category)) {
-      submissionData.image = null
-    }
+    try {
+      const response = await fetch("/api/items", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      })
 
-    console.log("Submitting:", submissionData)
-    // ここでAPIコールなどを行う
-    router.push("/")
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || "投稿に失敗しました")
+      }
+
+      toast({
+        title: "投稿完了",
+        description: "落とし物を投稿しました",
+      })
+
+      // 投稿成功後、ホームへ遷移
+      router.push("/")
+      router.refresh()
+    } catch (error) {
+      console.error("Submit error:", error)
+      toast({
+        title: "投稿エラー",
+        description: error instanceof Error ? error.message : "投稿に失敗しました",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleBack = () => {
@@ -167,7 +198,7 @@ export function PostItemForm() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Package className="h-5 w-5" />
-                何を見つけましたか？
+                何を見つけましたか?
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -176,7 +207,6 @@ export function PostItemForm() {
                 <div className="relative h-48 w-full rounded-md overflow-hidden bg-muted group">
                   <Image src={formData.image} alt="Taken photo" fill className="object-cover" />
                   
-                  {/* 貴重品選択時のオーバーレイ */}
                   {VALUABLES.includes(formData.category) && (
                     <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center text-white p-4 text-center animate-in fade-in duration-200">
                       <p className="font-bold text-lg mb-1">写真非表示</p>
@@ -184,7 +214,6 @@ export function PostItemForm() {
                     </div>
                   )}
 
-                  {/* 削除ボタン（貴重品以外で表示、または常に表示でもOK） */}
                   <Button 
                     variant="destructive" 
                     size="icon" 
@@ -206,11 +235,11 @@ export function PostItemForm() {
                     <SelectValue placeholder="選択してください" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="財布">財布（貴重品）</SelectItem>
-                    <SelectItem value="携帯電話">携帯電話（貴重品）</SelectItem>
-                    <SelectItem value="鍵">鍵（貴重品）</SelectItem>
-                    <SelectItem value="学生証">学生証（貴重品）</SelectItem>
-                    <SelectItem value="ノートパソコン">ノートパソコン（貴重品）</SelectItem>
+                    <SelectItem value="財布">財布(貴重品)</SelectItem>
+                    <SelectItem value="携帯電話">携帯電話(貴重品)</SelectItem>
+                    <SelectItem value="鍵">鍵(貴重品)</SelectItem>
+                    <SelectItem value="学生証">学生証(貴重品)</SelectItem>
+                    <SelectItem value="ノートパソコン">ノートパソコン(貴重品)</SelectItem>
                     <SelectItem value="電子機器">電子機器</SelectItem>
                     <SelectItem value="衣類">衣類</SelectItem>
                     <SelectItem value="文房具・学用品">文房具・学用品</SelectItem>
@@ -219,7 +248,6 @@ export function PostItemForm() {
                   </SelectContent>
                 </Select>
                 
-                {/* テキストでの注意書きも維持 */}
                 {VALUABLES.includes(formData.category) && (
                   <p className="text-xs text-orange-600 font-medium flex items-center gap-1">
                     ※セキュリティのため、貴重品類の写真はアップロードされません。
@@ -239,7 +267,7 @@ export function PostItemForm() {
               )}
 
               <div className="space-y-2">
-                <Label>特徴・詳細（任意）</Label>
+                <Label>特徴・詳細(任意)</Label>
                 <Textarea
                   placeholder="色、ブランド、形状など"
                   value={formData.description}
@@ -265,7 +293,7 @@ export function PostItemForm() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MapPin className="h-5 w-5" />
-                どこで見つけましたか？
+                どこで見つけましたか?
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -294,7 +322,7 @@ export function PostItemForm() {
                   disabled={!formData.campus}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="建物（キャンパス選択後に有効）" />
+                    <SelectValue placeholder="建物(キャンパス選択後に有効)" />
                   </SelectTrigger>
                   <SelectContent>
                     {formData.campus === "六甲台第一キャンパス" && (
@@ -319,7 +347,6 @@ export function PostItemForm() {
                         <SelectItem value="その他・屋外">その他・屋外</SelectItem>
                       </>
                     )}
-
                   </SelectContent>
                 </Select>
               </div>
@@ -355,7 +382,7 @@ export function PostItemForm() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CheckCircle className="h-5 w-5" />
-                事務室などに届けましたか？
+                事務室などに届けましたか?
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -388,7 +415,7 @@ export function PostItemForm() {
 
               {formData.submittedToOffice === true && (
                 <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
-                  <Label>どこの窓口ですか？（任意）</Label>
+                  <Label>どこの窓口ですか?(任意)</Label>
                   <Input 
                     placeholder="工学部教務課、学生センターなど"
                     value={formData.officeDetail}
@@ -403,7 +430,6 @@ export function PostItemForm() {
                   <span className="text-muted-foreground">物:</span>
                   <span className="font-medium">{formData.category}</span>
                 </div>
-                {/* 貴重品の場合は写真なしであることを明記 */}
                 {VALUABLES.includes(formData.category) && formData.image && (
                   <div className="flex justify-between text-orange-600">
                     <span className="text-xs">※貴重品のため写真は送信されません</span>
@@ -416,8 +442,20 @@ export function PostItemForm() {
               </div>
 
               {formData.submittedToOffice !== null && (
-                <Button size="lg" className="w-full mt-4" onClick={handleSubmit}>
-                  この内容で投稿する
+                <Button 
+                  size="lg" 
+                  className="w-full mt-4" 
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      投稿中...
+                    </>
+                  ) : (
+                    "この内容で投稿する"
+                  )}
                 </Button>
               )}
             </CardContent>
