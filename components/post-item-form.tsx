@@ -279,8 +279,8 @@ export function PostItemForm() {
                     <SelectValue placeholder="選択してください" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="六甲台第一キャンパス">六甲台第一キャンパス</SelectItem>
                     <SelectItem value="鶴甲第一キャンパス">鶴甲第一キャンパス</SelectItem>
+                    <SelectItem value="六甲台第一キャンパス">六甲台第一キャンパス</SelectItem>
                     <SelectItem value="六甲台第二キャンパス">六甲台第二キャンパス</SelectItem>
                   </SelectContent>
                 </Select>
@@ -305,7 +305,21 @@ export function PostItemForm() {
                         <SelectItem value="学生食堂">学生食堂</SelectItem>
                       </>
                     )}
-                    <SelectItem value="その他・屋外">その他・屋外</SelectItem>
+                    {formData.campus === "鶴甲第一キャンパス" && (
+                      <>
+                        <SelectItem value="食堂">食堂</SelectItem>
+                        <SelectItem value="B棟">B棟</SelectItem>
+                        <SelectItem value="図書館">図書館</SelectItem>
+                        <SelectItem value="体育館">体育館</SelectItem>
+                      </>
+                    )}
+                    {formData.campus === "六甲台第二キャンパス" && (
+                      <>
+                        <SelectItem value="理学部1号館">理学部1号館</SelectItem>
+                        <SelectItem value="その他・屋外">その他・屋外</SelectItem>
+                      </>
+                    )}
+
                   </SelectContent>
                 </Select>
               </div>
