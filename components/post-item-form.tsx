@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button"
 import { MapPin, Package, CheckCircle, ArrowLeft, X, ChevronRight, Loader2 } from "lucide-react"
 import Image from "next/image"
 import { useToast } from "../hooks/use-toast"
+import { appendLostItem } from "@/lib/lost-items"
 
 // 貴重品リスト
 const VALUABLES = ["財布", "携帯電話", "ノートパソコン", "学生証", "鍵", "電子機器"]
@@ -20,7 +21,7 @@ export function PostItemForm() {
   const { toast } = useToast()
   const [step, setStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  
+
   // フォームデータ
   const [formData, setFormData] = useState({
     campus: "",
@@ -77,7 +78,7 @@ export function PostItemForm() {
     canvas.height = videoRef.current.videoHeight
     canvas.getContext("2d")?.drawImage(videoRef.current, 0, 0)
     const photoUrl = canvas.toDataURL("image/jpeg", 0.8)
-    
+
     setFormData(prev => ({ ...prev, image: photoUrl }))
     stopCamera()
     setStep(2)
@@ -85,21 +86,25 @@ export function PostItemForm() {
 
   const handleSubmit = async () => {
     setIsSubmitting(true)
-    
+
     try {
-      const response = await fetch("/api/items", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const nextItem = {
+        id: Math.random().toString(36).slice(2, 10),
+        category: formData.category,
+        categoryOther: formData.categoryOther,
+        location: {
+          campus: formData.campus,
+          building: formData.building,
+          detail: formData.locationDetail,
         },
-        body: JSON.stringify(formData),
-      })
-
-      const result = await response.json()
-
-      if (!response.ok) {
-        throw new Error(result.error || "投稿に失敗しました")
+        description: formData.description,
+        submittedToOffice: formData.submittedToOffice ?? false,
+        officeDetail: formData.officeDetail,
+        imageUrl: formData.image && !VALUABLES.includes(formData.category) ? formData.image : null,
+        createdAt: new Date().toISOString(),
       }
+
+      appendLostItem(nextItem)
 
       toast({
         title: "投稿完了",
@@ -108,7 +113,6 @@ export function PostItemForm() {
 
       // 投稿成功後、ホームへ遷移
       router.push("/")
-      router.refresh()
     } catch (error) {
       console.error("Submit error:", error)
       toast({
@@ -145,50 +149,50 @@ export function PostItemForm() {
         {/* STEP 1: カメラ撮影 */}
         {step === 1 && (
           <div className="relative flex flex-col h-[70vh] sm:h-150 bg-black">
-             {!formData.image ? (
+            {!formData.image ? (
               <>
-                <video 
-                  ref={videoRef} 
-                  autoPlay 
-                  playsInline 
-                  muted 
-                  className="absolute inset-0 w-full h-full object-cover" 
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className="absolute inset-0 w-full h-full object-cover"
                 />
                 {!isCameraActive && (
-                   <div className="absolute inset-0 flex items-center justify-center text-white bg-gray-900/80">
-                     <p>カメラを起動中...</p>
-                   </div>
+                  <div className="absolute inset-0 flex items-center justify-center text-white bg-gray-900/80">
+                    <p>カメラを起動中...</p>
+                  </div>
                 )}
-                
+
                 <div className="absolute bottom-0 left-0 right-0 p-8 flex justify-center items-center bg-linear-to-t from-black/80 to-transparent pt-20">
-                  <button 
+                  <button
                     onClick={takePhoto}
                     className="w-20 h-20 rounded-full border-4 border-white bg-white/20 hover:bg-white/40 transition-all shadow-lg"
                     aria-label="写真を撮る"
                   />
                 </div>
-                
-                <Button 
-                  variant="secondary" 
+
+                <Button
+                  variant="secondary"
                   className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white backdrop-blur-sm border-none"
                   onClick={() => { stopCamera(); setStep(2); }}
                 >
                   撮らずに進む <ChevronRight className="ml-1 h-4 w-4" />
                 </Button>
               </>
-             ) : (
-               <div className="relative h-full w-full">
-                 <Image src={formData.image} alt="Preview" fill className="object-cover" />
-                 <div className="absolute bottom-8 w-full flex justify-center gap-4">
-                   <Button variant="destructive" onClick={() => setFormData(prev => ({...prev, image: null}))}>
-                     撮り直す
-                   </Button>
-                   <Button onClick={() => setStep(2)}>
-                     この写真を使う
-                   </Button>
-                 </div>
-               </div>
-             )}
+            ) : (
+              <div className="relative h-full w-full">
+                <Image src={formData.image} alt="Preview" fill className="object-cover" />
+                <div className="absolute bottom-8 w-full flex justify-center gap-4">
+                  <Button variant="destructive" onClick={() => setFormData(prev => ({ ...prev, image: null }))}>
+                    撮り直す
+                  </Button>
+                  <Button onClick={() => setStep(2)}>
+                    この写真を使う
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -202,11 +206,11 @@ export function PostItemForm() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              
+
               {formData.image && (
                 <div className="relative h-48 w-full rounded-md overflow-hidden bg-muted group">
                   <Image src={formData.image} alt="Taken photo" fill className="object-cover" />
-                  
+
                   {VALUABLES.includes(formData.category) && (
                     <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center text-white p-4 text-center animate-in fade-in duration-200">
                       <p className="font-bold text-lg mb-1">写真非表示</p>
@@ -214,11 +218,11 @@ export function PostItemForm() {
                     </div>
                   )}
 
-                  <Button 
-                    variant="destructive" 
-                    size="icon" 
+                  <Button
+                    variant="destructive"
+                    size="icon"
                     className="absolute top-2 right-2 h-8 w-8 z-10"
-                    onClick={() => setFormData(prev => ({...prev, image: null}))}
+                    onClick={() => setFormData(prev => ({ ...prev, image: null }))}
                   >
                     <X className="h-4 w-4" />
                   </Button>
@@ -247,7 +251,7 @@ export function PostItemForm() {
                     <SelectItem value="その他">その他</SelectItem>
                   </SelectContent>
                 </Select>
-                
+
                 {VALUABLES.includes(formData.category) && (
                   <p className="text-xs text-orange-600 font-medium flex items-center gap-1">
                     ※セキュリティのため、貴重品類の写真はアップロードされません。
@@ -276,8 +280,8 @@ export function PostItemForm() {
                 />
               </div>
 
-              <Button 
-                className="w-full" 
+              <Button
+                className="w-full"
                 onClick={() => setStep(3)}
                 disabled={!formData.category}
               >
@@ -365,8 +369,8 @@ export function PostItemForm() {
                 )}
               </div>
 
-              <Button 
-                className="w-full" 
+              <Button
+                className="w-full"
                 onClick={() => setStep(4)}
                 disabled={!formData.campus || (!formData.building && !formData.locationDetail)}
               >
@@ -390,11 +394,10 @@ export function PostItemForm() {
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, submittedToOffice: true })}
-                  className={`p-4 rounded-xl border-2 text-center transition-all ${
-                    formData.submittedToOffice === true
+                  className={`p-4 rounded-xl border-2 text-center transition-all ${formData.submittedToOffice === true
                       ? "border-primary bg-primary/5 text-primary font-bold"
                       : "border-muted hover:border-primary/50"
-                  }`}
+                    }`}
                 >
                   はい
                   <span className="block text-xs font-normal text-muted-foreground mt-1">届け出済み</span>
@@ -402,11 +405,10 @@ export function PostItemForm() {
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, submittedToOffice: false })}
-                  className={`p-4 rounded-xl border-2 text-center transition-all ${
-                    formData.submittedToOffice === false
+                  className={`p-4 rounded-xl border-2 text-center transition-all ${formData.submittedToOffice === false
                       ? "border-primary bg-primary/5 text-primary font-bold"
                       : "border-muted hover:border-primary/50"
-                  }`}
+                    }`}
                 >
                   いいえ
                   <span className="block text-xs font-normal text-muted-foreground mt-1">その場にある</span>
@@ -416,10 +418,10 @@ export function PostItemForm() {
               {formData.submittedToOffice === true && (
                 <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
                   <Label>どこの窓口ですか?(任意)</Label>
-                  <Input 
+                  <Input
                     placeholder="工学部教務課、学生センターなど"
                     value={formData.officeDetail}
-                    onChange={(e) => setFormData({...formData, officeDetail: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, officeDetail: e.target.value })}
                   />
                 </div>
               )}
@@ -442,9 +444,9 @@ export function PostItemForm() {
               </div>
 
               {formData.submittedToOffice !== null && (
-                <Button 
-                  size="lg" 
-                  className="w-full mt-4" 
+                <Button
+                  size="lg"
+                  className="w-full mt-4"
                   onClick={handleSubmit}
                   disabled={isSubmitting}
                 >

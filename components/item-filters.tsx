@@ -88,9 +88,11 @@ export function ItemFilters({ filters, onFiltersChange }: ItemFiltersProps) {
               <SelectValue placeholder="選択してください" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="財布・小物類">財布・小物類</SelectItem>
-              <SelectItem value="傘">傘</SelectItem>
+              <SelectItem value="財布">財布</SelectItem>
+              <SelectItem value="携帯電話">携帯電話</SelectItem>
               <SelectItem value="電子機器">電子機器</SelectItem>
+              <SelectItem value="学生証">学生証</SelectItem>
+              <SelectItem value="ノートパソコン">ノートパソコン</SelectItem>
               <SelectItem value="衣類">衣類</SelectItem>
               <SelectItem value="文房具・学用品">文房具・学用品</SelectItem>
               <SelectItem value="鍵">鍵</SelectItem>
