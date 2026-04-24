@@ -3,6 +3,7 @@
         "id": "mock-1",
         "category": "財布",
         "categoryOther": "",
+        "color": "黒",
         "location": {
             "campus": "六甲台第一キャンパス",
             "building": "工学部1号館",
@@ -18,6 +19,7 @@
         "id": "mock-2",
         "category": "電子機器",
         "categoryOther": "",
+        "color": "白",
         "location": {
             "campus": "鶴甲第一キャンパス",
             "building": "学生会館",
@@ -33,6 +35,7 @@
         "id": "mock-3",
         "category": "文房具・学用品",
         "categoryOther": "",
+        "color": "青",
         "location": {
             "campus": "六甲台第二キャンパス",
             "building": "理学部1号館",
@@ -48,6 +51,7 @@
         "id": "mock-4",
         "category": "衣類",
         "categoryOther": "",
+        "color": "青",
         "location": {
             "campus": "六甲台第一キャンパス",
             "building": "図書館",

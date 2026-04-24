@@ -3,16 +3,24 @@
 import { useState, useEffect } from "react"
 import { ItemCard } from "@/components/item-card"
 import { ItemFilters } from "@/components/item-filters"
-import { Package, Loader2 } from "lucide-react"
-import { readLostItems, toViewItems, type LostItemView } from "@/lib/lost-items"
+import { Package, Loader2, Search } from "lucide-react"
+import { isWithinLostPeriod, readLostItems, toViewItems, type LostItemView } from "@/lib/lost-items"
+
+type SearchState = {
+  category: string
+  period: string
+  color: string
+}
 
 export function ItemTimeline() {
   const [items, setItems] = useState<LostItemView[]>([])
-  const [filters, setFilters] = useState({
-    campus: "",
-    building: "",
+  const [draftSearch, setDraftSearch] = useState<SearchState>({
     category: "",
+    period: "",
+    color: "",
   })
+  const [appliedSearch, setAppliedSearch] = useState<SearchState | null>(null)
+  const [hasSearched, setHasSearched] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -35,22 +43,46 @@ export function ItemTimeline() {
     }
   }, [])
 
-  // クライアント側での建物フィルタリング
-  const filteredItems = items.filter((item) => {
-    if (filters.campus && item.location.campus !== filters.campus) return false
-    if (filters.category && item.category !== filters.category) return false
-    if (filters.building && item.location.building !== filters.building) return false
-    return true
-  })
+  const filteredItems = appliedSearch
+    ? items.filter((item) => {
+      if (appliedSearch.category && item.category !== appliedSearch.category) return false
+      if (appliedSearch.color && item.color !== appliedSearch.color) return false
+      if (appliedSearch.period && !isWithinLostPeriod(item.createdAt, appliedSearch.period)) return false
+      return true
+    })
+    : []
+
+  const handleSearch = () => {
+    if (!draftSearch.category && !draftSearch.period && !draftSearch.color) {
+      return
+    }
+
+    setAppliedSearch(draftSearch)
+    setHasSearched(true)
+  }
+
+  const handleReset = () => {
+    setDraftSearch({ category: "", period: "", color: "" })
+    setAppliedSearch(null)
+    setHasSearched(false)
+  }
+
+  const canSearch = Boolean(draftSearch.category || draftSearch.period || draftSearch.color)
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-balance">落とし物一覧</h1>
-        <p className="mt-2 text-muted-foreground">キャンパス内で見つかった落とし物を確認できます</p>
+        <h1 className="text-3xl font-bold tracking-tight text-balance">落とし物検索</h1>
+        <p className="mt-2 text-muted-foreground">条件を選んでから、該当する落とし物だけ確認できます</p>
       </div>
 
-      <ItemFilters filters={filters} onFiltersChange={setFilters} />
+      <ItemFilters
+        value={draftSearch}
+        onValueChange={setDraftSearch}
+        onSearch={handleSearch}
+        onReset={handleReset}
+        canSearch={canSearch}
+      />
 
       <div className="space-y-4">
         {/* ローディング状態 */}
@@ -61,8 +93,16 @@ export function ItemTimeline() {
           </div>
         )}
 
+        {!isLoading && !hasSearched && (
+          <div className="flex flex-col items-center justify-center py-12 text-center border border-dashed rounded-2xl bg-muted/20">
+            <Search className="h-16 w-16 text-muted-foreground/50 mb-4" />
+            <p className="text-lg font-medium text-muted-foreground">検索条件を指定してください</p>
+            <p className="text-sm text-muted-foreground mt-1">ジャンル・期間・色を組み合わせて絞り込めます</p>
+          </div>
+        )}
+
         {/* データ表示 */}
-        {!isLoading && filteredItems.length > 0 && (
+        {!isLoading && hasSearched && filteredItems.length > 0 && (
           filteredItems.map((item) => (
             <ItemCard
               key={item.id}
@@ -81,11 +121,11 @@ export function ItemTimeline() {
         )}
 
         {/* 空状態 */}
-        {!isLoading && filteredItems.length === 0 && (
+        {!isLoading && hasSearched && filteredItems.length === 0 && (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <Package className="h-16 w-16 text-muted-foreground/50 mb-4" />
             <p className="text-lg font-medium text-muted-foreground">該当する落とし物が見つかりませんでした</p>
-            <p className="text-sm text-muted-foreground mt-1">フィルターを変更してお試しください</p>
+            <p className="text-sm text-muted-foreground mt-1">条件を変えてお試しください</p>
           </div>
         )}
       </div>

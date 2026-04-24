@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button"
 import { MapPin, Package, CheckCircle, ArrowLeft, X, ChevronRight, Loader2 } from "lucide-react"
 import Image from "next/image"
 import { useToast } from "../hooks/use-toast"
-import { appendLostItem } from "@/lib/lost-items"
+import { appendLostItem, ITEM_COLOR_OPTIONS } from "@/lib/lost-items"
 
 // 貴重品リスト
 const VALUABLES = ["財布", "携帯電話", "ノートパソコン", "学生証", "鍵", "電子機器"]
@@ -29,6 +29,7 @@ export function PostItemForm() {
     locationDetail: "",
     category: "",
     categoryOther: "",
+    color: "",
     description: "",
     submittedToOffice: null as boolean | null,
     officeDetail: "",
@@ -92,6 +93,7 @@ export function PostItemForm() {
         id: Math.random().toString(36).slice(2, 10),
         category: formData.category,
         categoryOther: formData.categoryOther,
+        color: formData.color,
         location: {
           campus: formData.campus,
           building: formData.building,
@@ -271,6 +273,25 @@ export function PostItemForm() {
               )}
 
               <div className="space-y-2">
+                <Label>色</Label>
+                <Select
+                  value={formData.color}
+                  onValueChange={(value) => setFormData({ ...formData, color: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="選択してください" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ITEM_COLOR_OPTIONS.map((color) => (
+                      <SelectItem key={color} value={color}>
+                        {color}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
                 <Label>特徴・詳細(任意)</Label>
                 <Textarea
                   placeholder="色、ブランド、形状など"
@@ -395,8 +416,8 @@ export function PostItemForm() {
                   type="button"
                   onClick={() => setFormData({ ...formData, submittedToOffice: true })}
                   className={`p-4 rounded-xl border-2 text-center transition-all ${formData.submittedToOffice === true
-                      ? "border-primary bg-primary/5 text-primary font-bold"
-                      : "border-muted hover:border-primary/50"
+                    ? "border-primary bg-primary/5 text-primary font-bold"
+                    : "border-muted hover:border-primary/50"
                     }`}
                 >
                   はい
@@ -406,8 +427,8 @@ export function PostItemForm() {
                   type="button"
                   onClick={() => setFormData({ ...formData, submittedToOffice: false })}
                   className={`p-4 rounded-xl border-2 text-center transition-all ${formData.submittedToOffice === false
-                      ? "border-primary bg-primary/5 text-primary font-bold"
-                      : "border-muted hover:border-primary/50"
+                    ? "border-primary bg-primary/5 text-primary font-bold"
+                    : "border-muted hover:border-primary/50"
                     }`}
                 >
                   いいえ

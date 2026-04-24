@@ -5,30 +5,32 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
+import { ITEM_COLOR_OPTIONS, LOST_PERIOD_OPTIONS } from "@/lib/lost-items"
 
 interface ItemFiltersProps {
-  filters: {
-    campus: string
-    building: string
+  value: {
     category: string
+    period: string
+    color: string
   }
-  onFiltersChange: (filters: any) => void
+  onValueChange: (value: {
+    category: string
+    period: string
+    color: string
+  }) => void
+  onSearch: () => void
+  onReset: () => void
+  canSearch: boolean
 }
 
-export function ItemFilters({ filters, onFiltersChange }: ItemFiltersProps) {
-  const handleReset = () => {
-    onFiltersChange({ campus: "", building: "", category: "" })
-  }
-
-  const hasActiveFilters = filters.campus || filters.building || filters.category
-
+export function ItemFilters({ value, onValueChange, onSearch, onReset, canSearch }: ItemFiltersProps) {
   return (
     <Card>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg">絞り込み検索</CardTitle>
-          {hasActiveFilters && (
-            <Button variant="ghost" size="sm" onClick={handleReset} className="h-8 gap-2">
+          <CardTitle className="text-lg">落とし物検索</CardTitle>
+          {canSearch && (
+            <Button variant="ghost" size="sm" onClick={onReset} className="h-8 gap-2">
               <X className="h-4 w-4" />
               リセット
             </Button>
@@ -37,53 +39,11 @@ export function ItemFilters({ filters, onFiltersChange }: ItemFiltersProps) {
       </CardHeader>
       <CardContent className="grid gap-4 sm:grid-cols-3">
         <div className="space-y-2">
-          <Label htmlFor="campus">キャンパス</Label>
+          <Label htmlFor="category">ジャンル</Label>
           <Select
-            value={filters.campus}
-            onValueChange={(value) => onFiltersChange({ ...filters, campus: value, building: "" })}
+            value={value.category}
+            onValueChange={(category) => onValueChange({ ...value, category })}
           >
-            <SelectTrigger id="campus">
-              <SelectValue placeholder="選択してください" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="六甲台第一キャンパス">六甲台第一キャンパス</SelectItem>
-              <SelectItem value="鶴甲第一キャンパス">鶴甲第一キャンパス</SelectItem>
-              <SelectItem value="六甲台第二キャンパス">六甲台第二キャンパス</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="building">建物</Label>
-          <Select
-            value={filters.building}
-            onValueChange={(value) => onFiltersChange({ ...filters, building: value })}
-            disabled={!filters.campus}
-          >
-            <SelectTrigger id="building">
-              <SelectValue placeholder="選択してください" />
-            </SelectTrigger>
-            <SelectContent>
-              {filters.campus === "六甲台第一キャンパス" && (
-                <>
-                  <SelectItem value="工学部1号館">工学部1号館</SelectItem>
-                  <SelectItem value="図書館">図書館</SelectItem>
-                  <SelectItem value="総合図書館">総合図書館</SelectItem>
-                </>
-              )}
-              {filters.campus === "鶴甲第一キャンパス" && (
-                <>
-                  <SelectItem value="学生会館">学生会館</SelectItem>
-                  <SelectItem value="教養学部棟">教養学部棟</SelectItem>
-                </>
-              )}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="category">物の種類</Label>
-          <Select value={filters.category} onValueChange={(value) => onFiltersChange({ ...filters, category: value })}>
             <SelectTrigger id="category">
               <SelectValue placeholder="選択してください" />
             </SelectTrigger>
@@ -100,6 +60,50 @@ export function ItemFilters({ filters, onFiltersChange }: ItemFiltersProps) {
               <SelectItem value="その他">その他</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="period">期間</Label>
+          <Select
+            value={value.period}
+            onValueChange={(period) => onValueChange({ ...value, period })}
+          >
+            <SelectTrigger id="period">
+              <SelectValue placeholder="選択してください" />
+            </SelectTrigger>
+            <SelectContent>
+              {LOST_PERIOD_OPTIONS.map((periodOption) => (
+                <SelectItem key={periodOption.value} value={periodOption.value}>
+                  {periodOption.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="color">色</Label>
+          <Select value={value.color} onValueChange={(color) => onValueChange({ ...value, color })}>
+            <SelectTrigger id="color">
+              <SelectValue placeholder="選択してください" />
+            </SelectTrigger>
+            <SelectContent>
+              {ITEM_COLOR_OPTIONS.map((color) => (
+                <SelectItem key={color} value={color}>
+                  {color}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="sm:col-span-3 flex flex-col gap-3 sm:flex-row sm:justify-end">
+          <Button type="button" variant="outline" onClick={onReset} className="sm:w-auto w-full">
+            条件をクリア
+          </Button>
+          <Button type="button" onClick={onSearch} disabled={!canSearch} className="sm:w-auto w-full">
+            この条件で検索
+          </Button>
         </div>
       </CardContent>
     </Card>
