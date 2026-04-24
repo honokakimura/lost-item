@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 落とし物掲示板
 
-## Getting Started
+サークル内ハッカソンの成果物として作成した、大学内の落とし物共有アプリです。
 
-First, run the development server:
+## 背景と解決したい課題
+
+- 見つけた人は拾っても、情報共有の手段が面倒で投稿されない
+- 落とした人は、どこで何が見つかったかを知る手がかりが少ない
+
+結果として、見つけた人と落とした人の間で情報がつながらない
+
+## このアプリの方針
+
+このアプリは、次の2点を重視しています。
+
+- 見つけた人がとにかく簡単に投稿できること
+- なりすまし防止のため、誰でも一覧を見られる設計にしないこと
+
+## 主な機能
+
+1. かんたん投稿フロー
+- 写真撮影またはスキップ
+- カテゴリ、色、場所などの最低限入力
+- 数ステップで投稿完了
+
+2. 条件付き検索による閲覧
+- 落とし物は初期状態で一覧表示しません
+- ジャンル、落とした期間、色の条件を指定して検索します
+- 条件に合うものだけ表示することで、なりすましリスクを下げます
+
+3. ローカル保存ベースの動作
+- 投稿データは `localStorage` に保存されます
+- 初期表示用にモックデータを同梱しています
+
+## 想定ユーザー
+
+- 見つけた人: 最小手順で落とし物情報を投稿する
+- 落とした人: 心当たりの条件で検索し、該当情報を確認する
+
+## 技術スタック
+
+- Next.js (App Router)
+- React
+- TypeScript
+- Tailwind CSS
+
+## デプロイ
+[text](https://lost-item-gamma.vercel.app/)
+
+## ローカル実行
+
+1. 依存関係のインストール
+
+```bash
+npm install
+```
+
+2. 開発サーバー起動
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+3. ブラウザで確認
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+`http://localhost:3000`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 補足
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- 本リポジトリはハッカソン向けプロトタイプです
+- 現在はバックエンド連携を切り、モック + ローカル保存で動作します
