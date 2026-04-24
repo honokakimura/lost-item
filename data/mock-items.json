@@ -1,0 +1,66 @@
+[
+    {
+        "id": "mock-1",
+        "category": "財布",
+        "categoryOther": "",
+        "color": "黒",
+        "location": {
+            "campus": "六甲台第一キャンパス",
+            "building": "工学部1号館",
+            "detail": "2階の自習スペース"
+        },
+        "description": "黒い二つ折りの財布です。",
+        "submittedToOffice": true,
+        "officeDetail": "工学部1号館 1階受付",
+        "imageUrl": null,
+        "createdAt": "2026-04-22T08:30:00.000Z"
+    },
+    {
+        "id": "mock-2",
+        "category": "電子機器",
+        "categoryOther": "",
+        "color": "白",
+        "location": {
+            "campus": "鶴甲第一キャンパス",
+            "building": "学生会館",
+            "detail": "3階のラウンジ"
+        },
+        "description": "白いイヤホンケースを見つけました。",
+        "submittedToOffice": false,
+        "officeDetail": "",
+        "imageUrl": null,
+        "createdAt": "2026-04-21T11:15:00.000Z"
+    },
+    {
+        "id": "mock-3",
+        "category": "文房具・学用品",
+        "categoryOther": "",
+        "color": "青",
+        "location": {
+            "campus": "六甲台第二キャンパス",
+            "building": "理学部1号館",
+            "detail": "1階の掲示板付近"
+        },
+        "description": "青いシャープペンシルです。",
+        "submittedToOffice": true,
+        "officeDetail": "理学部1号館 事務室",
+        "imageUrl": null,
+        "createdAt": "2026-04-20T14:45:00.000Z"
+    },
+    {
+        "id": "mock-4",
+        "category": "衣類",
+        "categoryOther": "",
+        "color": "青",
+        "location": {
+            "campus": "六甲台第一キャンパス",
+            "building": "図書館",
+            "detail": "入口のベンチ"
+        },
+        "description": "紺色のパーカーです。",
+        "submittedToOffice": false,
+        "officeDetail": "",
+        "imageUrl": null,
+        "createdAt": "2026-04-19T09:05:00.000Z"
+    }
+]

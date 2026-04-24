@@ -36,11 +36,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const isProduction = process.env.NODE_ENV === "production"
+
   return (
     <html lang="ja">
       <body className={`font-sans antialiased`}>
         {children}
-        <Analytics />
+        {isProduction && <Analytics />}
         <Toaster />
       </body>
     </html>

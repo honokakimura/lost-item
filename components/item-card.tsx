@@ -9,6 +9,7 @@ interface ItemCardProps {
   item: {
     id: string
     category: string
+    color: string
     location: {
       campus: string
       building: string
@@ -41,6 +42,15 @@ export function ItemCard({ item }: ItemCardProps) {
               <Badge variant="secondary" className="font-semibold">
                 {item.category}
               </Badge>
+              {item.color ? (
+                <Badge variant="outline" className="font-semibold">
+                  {item.color}
+                </Badge>
+              ) : (
+                <Badge variant="outline" className="font-semibold">
+                  色未設定
+                </Badge>
+              )}
               {item.submittedToOffice && (
                 <Badge variant="default" className="gap-1">
                   <CheckCircle2 className="h-3 w-3" />
