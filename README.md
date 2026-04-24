@@ -45,7 +45,7 @@
 - Tailwind CSS
 
 ## デプロイ
-[text](https://lost-item-gamma.vercel.app/)
+https://lost-item-gamma.vercel.app/
 
 ## ローカル実行
 
